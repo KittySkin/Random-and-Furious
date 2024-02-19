@@ -1,6 +1,10 @@
+import json
 import sys
 import random
-from PySide6 import QtCore, QtGui, QtWidgets
+
+from PySide6 import QtCore, QtWidgets
+
+NETFLIX_CATALOGUE = json.load(open('result.json'))['results']
 
 MOVIE_LIST = [
     'The Fast and The Furious',
@@ -32,15 +36,19 @@ class RandomAndFurious(QtWidgets.QWidget):
         # Close button
         close_button = QtWidgets.QPushButton('Close')
         close_button.clicked.connect(self.close)
-        # Movie to watch list
-        self.movie_to_watch = QtWidgets.QTextBrowser()
-        self.movie_to_watch.setText('Magic movie you are about to watch is...')
-        self.movie_to_watch.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        # Movie information display
+        self.movie_info = QtWidgets.QTextBrowser()
+        self.movie_info.setText("Magic Movie you are about to watch is...")
+        self.movie_info.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.movie_info.setOpenExternalLinks(True)
+        self.movie_info.setStyleSheet("border: none;")
+        # Setting the app's theme
+        self.setStyleSheet("background-color: #333; color: #fff;")
         # Setting the randomize button
         randomize_button = QtWidgets.QPushButton('Random Time!')
         randomize_button.clicked.connect(self.select_movie)
-        # Adding all to the layout
-        layout.addWidget(self.movie_to_watch)
+        # Adding widgets to layout
+        layout.addWidget(self.movie_info)
         button_layout.addWidget(randomize_button)
         button_layout.addWidget(close_button)
         layout.addLayout(button_layout)
@@ -50,12 +58,15 @@ class RandomAndFurious(QtWidgets.QWidget):
 
     def select_movie(self):
         movie_to_watch = random.choice(self.movie_list)
-        self.movie_to_watch.setText(movie_to_watch)
-        self.movie_to_watch.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        movie_title = f"<div style='text-align: center;'><b>{movie_to_watch['title']}</b><br><br>"
+        movie_synopsis = f"{movie_to_watch['synopsis']}<br><br>"
+        movie_url = f"<a href='https://www.netflix.com/watch/{movie_to_watch['netflix_id']}'>Watch on Netflix</a></div>"
+        movie_info_text = movie_title + movie_synopsis + movie_url
+        self.movie_info.setHtml(movie_info_text)
 
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
-    random_and_furious = RandomAndFurious(MOVIE_LIST)
+    random_and_furious = RandomAndFurious(NETFLIX_CATALOGUE)
     random_and_furious.show()
     sys.exit(app.exec())
