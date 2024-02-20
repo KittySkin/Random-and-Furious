@@ -1,10 +1,13 @@
 import json
 import sys
 import random
+import os
 
 from PySide6 import QtCore, QtWidgets
 
-NETFLIX_CATALOGUE = json.load(open('result.json'))['results']
+script_path = os.path.dirname(__file__)
+
+NETFLIX_CATALOGUE = json.load(open(f'{script_path}/result.json'))['results']
 
 MOVIE_LIST = [
     'The Fast and The Furious',
